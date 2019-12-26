@@ -1,6 +1,7 @@
 import React, { memo } from 'react'
 
 import Slider from '../../components/slider'
+import RecommendList from '../../components/list'
 
 const Recommend = memo(function Recommend(props) {
   const bannerList = [1, 2, 3, 4].map(item => {
@@ -10,9 +11,20 @@ const Recommend = memo(function Recommend(props) {
     }
   })
 
+  const recommendList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(item => {
+    return {
+      id: 1,
+      picUrl:
+        'https://p1.music.126.net/fhmefjUfMD-8qtj3JKeHbA==/18999560928537533.jpg',
+      playCount: 171000000,
+      name: '朴树、许巍、李健、郑钧、老狼、赵雷'
+    }
+  })
+
   return (
     <div>
       <Slider bannerList={bannerList}></Slider>
+      <RecommendList recommendList={recommendList} />
     </div>
   )
 })
