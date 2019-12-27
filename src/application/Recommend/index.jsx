@@ -7,11 +7,13 @@ import Slider from '../../components/slider'
 import RecommendList from '../../components/list'
 import { Content } from './style'
 import Scroll from '../../baseUI/scroll'
+import Loading from '../../baseUI/loading'
 
 const Recommend = memo(function Recommend(props) {
   const {
     bannerList,
     recommendList,
+    isLoading,
     getBannerDataDispatch,
     getRecommendListDataDispatch
   } = props
@@ -30,13 +32,15 @@ const Recommend = memo(function Recommend(props) {
           <RecommendList recommendList={recommendList} />
         </div>
       </Scroll>
+      {isLoading ? <Loading /> : null}
     </Content>
   )
 })
 
 const mapStateToProps = state => ({
   bannerList: state.getIn(['recommend', 'bannerList']),
-  recommendList: state.getIn(['recommend', 'recommendList'])
+  recommendList: state.getIn(['recommend', 'recommendList']),
+  isLoading: state.getIn(['recommend', 'isLoading'])
 })
 
 const mapDispatchToProps = dispatch => ({

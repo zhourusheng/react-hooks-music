@@ -2,6 +2,7 @@ import { getBannerRequest, getRecommendListRequest } from '../../../api/api'
 
 export const CHANGE_BANNER = 'recommend/CHANGE_BANNER'
 export const CHANGE_RECOMMEND_LIST = 'recommend/RECOMMEND_LIST'
+export const CHANGE_IS_LOADING = 'recommend/CHANGE_IS_LOADING'
 
 const changeBannerList = data => ({
   type: CHANGE_BANNER,
@@ -13,16 +14,32 @@ const changeRecommendList = data => ({
   data
 })
 
+const changeIsLoading = data => ({
+  type: CHANGE_IS_LOADING,
+  data
+})
+
 export const getBannerList = () => {
   return async dispatch => {
-    const { banners } = await getBannerRequest()
-    dispatch(changeBannerList(banners))
+    try {
+      const { banners } = await getBannerRequest()
+      dispatch(changeBannerList(banners))
+    } catch (error) {
+      console.log(error)
+    }
   }
 }
 
 export const getRecommendList = () => {
   return async dispatch => {
-    const { result } = await getRecommendListRequest()
-    dispatch(changeRecommendList(result))
+    dispatch(changeIsLoading(true))
+    try {
+      const { result } = await getRecommendListRequest()
+      dispatch(changeRecommendList(result))
+      dispatch(changeIsLoading(false))
+    } catch (error) {
+      dispatch(changeIsLoading(false))
+      console.log(error)
+    }
   }
 }

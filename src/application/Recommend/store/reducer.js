@@ -1,10 +1,15 @@
 import { fromJS } from 'immutable'
 
-import { CHANGE_BANNER, CHANGE_RECOMMEND_LIST } from './action'
+import {
+  CHANGE_BANNER,
+  CHANGE_RECOMMEND_LIST,
+  CHANGE_IS_LOADING
+} from './action'
 
 const defaultState = fromJS({
   bannerList: [],
-  recommendList: []
+  recommendList: [],
+  isLoading: false
 })
 
 const reducer = (state = defaultState, action) => {
@@ -17,6 +22,8 @@ const reducer = (state = defaultState, action) => {
       return state.merge({
         recommendList: action.data
       })
+    case CHANGE_IS_LOADING:
+      return state.set('isLoading', action.data)
     default:
       return state
   }
