@@ -1,9 +1,18 @@
 import React, { memo, useEffect, useRef } from 'react'
 import { connect } from 'react-redux'
+import LazyLoad, { forceCheck } from 'react-lazyload'
+import { renderRoutes } from 'react-router-config'
 
+import Loading from '../../baseUI/loading'
 import { categoryTypes, alphaTypes } from '../../api/contants'
 import Horizen from '../../baseUI/horizen'
-import { NavContainer, ListContainer, List, ListItem } from './style'
+import {
+  NavContainer,
+  ListContainer,
+  List,
+  ListItem,
+  EnterLoading
+} from './style'
 import Scroll from '../../baseUI/scroll'
 import {
   getSingerList,
@@ -52,12 +61,23 @@ const Singers = memo(function Singers(props) {
           return (
             <ListItem key={item.accountId + '' + index}>
               <div className='img_wrapper'>
-                <img
-                  src={`${item.picUrl}?param=300x300`}
-                  width='100%'
-                  height='100%'
-                  alt='music'
-                />
+                <LazyLoad
+                  placeholder={
+                    <img
+                      width='100%'
+                      height='100%'
+                      src={require('./singer.png')}
+                      alt='music'
+                    />
+                  }
+                >
+                  <img
+                    src={`${item.picUrl}?param=300x300`}
+                    width='100%'
+                    height='100%'
+                    alt='music'
+                  />
+                </LazyLoad>
               </div>
               <span className='name'>{item.name}</span>
             </ListItem>
@@ -86,6 +106,12 @@ const Singers = memo(function Singers(props) {
       <ListContainer>
         <Scroll>{renderSingerList()}</Scroll>
       </ListContainer>
+      {enterLoading ? (
+        <EnterLoading>
+          <Loading></Loading>
+        </EnterLoading>
+      ) : null}
+      {renderRoutes(props.route.routes)}
     </>
   )
 })
