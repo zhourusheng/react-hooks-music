@@ -28,6 +28,8 @@ import {
 } from './store/action'
 
 const Singers = memo(function Singers(props) {
+  const scrollRef = useRef(null)
+
   const {
     singerList,
     alpha,
@@ -50,16 +52,36 @@ const Singers = memo(function Singers(props) {
     getHotSinger()
   }, [])
 
-  const handleUpdateCategory = key => {}
+  const handleUpdateCategory = key => {
+    if (category === key) return
+    updateCategory(key)
+    scrollRef.current.refresh()
+  }
 
-  const handleUpdateAlpha = key => {}
+  const handleUpdateAlpha = key => {
+    if (alpha === key) return
+    updateAlpha(key)
+    scrollRef.current.refresh()
+  }
+
+  const handlePullUp = () => {
+    pullUpRefresh(category === '', pageCount)
+  }
+
+  const handlePullDown = () => {
+    pullDownRefresh(category, pageCount)
+  }
+
+  const enterDetail = id => {
+    props.history.push(`/singers/${id}`)
+  }
 
   const renderSingerList = () => {
     return (
       <List>
         {singerList.toJS().map((item, index) => {
           return (
-            <ListItem key={item.accountId + '' + index}>
+            <ListItem key={item.accountId + '' + index} onClick={() => enterDetail(item.id)}>
               <div className='img_wrapper'>
                 <LazyLoad
                   placeholder={
@@ -104,7 +126,16 @@ const Singers = memo(function Singers(props) {
         ></Horizen>
       </NavContainer>
       <ListContainer>
-        <Scroll>{renderSingerList()}</Scroll>
+        <Scroll
+          ref={scrollRef}
+          onScroll={forceCheck}
+          pullUp={handlePullUp}
+          pullDown={handlePullDown}
+          pullUpLoading={pullUpLoading}
+          pullDownLoading={pullDownLoading}
+        >
+          {renderSingerList()}
+        </Scroll>
       </ListContainer>
       {enterLoading ? (
         <EnterLoading>

@@ -69,26 +69,31 @@ export const getHotSingerList = () => {
 
 // 加载更多热门歌手
 export const refreshMoreHotSingerList = () => {
-  return async (dispatch, getState) => {
-    try {
-      const pageCount = getState().getIn('singers', 'pageCount')
-      const singerList = getState()
-        .getIn('singers', 'singerList')
-        .toJS()
-      const { artists } = getHotSingerListRequest(pageCount)
-      const data = [...singerList, ...artists]
-      dispatch(changeSingerList(data))
-      dispatch(changePullUpLoading(false))
-    } catch (error) {
-      console.log(error)
-    }
+  return (dispatch, getState) => {
+    const offset = getState().getIn(['singers', 'listOffset'])
+    const singerList = getState()
+      .getIn(['singers', 'singerList'])
+      .toJS()
+    getHotSingerListRequest(offset)
+      .then(res => {
+        const data = [...singerList, ...res.artists]
+        dispatch(changeSingerList(data))
+        dispatch(changePullUpLoading(false))
+        dispatch(changeListOffset(data.length))
+      })
+      .catch(() => {
+        console.log('热门歌手数据获取失败')
+      })
   }
 }
 
 //第一次加载对应类别的歌手
-export const getSingerList = (category, alpha) => {
+export const getSingerList = () => {
   return (dispatch, getState) => {
-    getSingerListRequest(category, alpha, 0)
+    const offset = getState().getIn(['singers', 'listOffset'])
+    const category = getState().getIn(['singers', 'category'])
+    const alpha = getState().getIn(['singers', 'alpha'])
+    getSingerListRequest(category, alpha, offset)
       .then(res => {
         const data = res.artists
         dispatch(changeSingerList(data))
