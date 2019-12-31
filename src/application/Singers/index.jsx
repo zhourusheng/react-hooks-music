@@ -1,16 +1,49 @@
-import React, { memo, useState } from 'react'
+import React, { memo, useEffect, useRef } from 'react'
 import { connect } from 'react-redux'
 
 import { categoryTypes, alphaTypes } from '../../api/contants'
 import Horizen from '../../baseUI/horizen'
 import { NavContainer, ListContainer, List, ListItem } from './style'
 import Scroll from '../../baseUI/scroll'
+import {
+  getSingerList,
+  changeCategory,
+  changeAlpha,
+  getHotSingerList,
+  changeEnterLoading,
+  changeListOffset,
+  refreshMoreSingerList,
+  changePullUpLoading,
+  changePullDownLoading,
+  refreshMoreHotSingerList
+} from './store/action'
 
 const Singers = memo(function Singers(props) {
-  const [category, setCategory] = useState('')
-  const [alpha, setAlpha] = useState('')
+  const {
+    singerList,
+    alpha,
+    category,
+    enterLoading,
+    pullUpLoading,
+    pullDownLoading,
+    pageCount
+  } = props
 
-  const { singerList } = props
+  const {
+    getHotSinger,
+    updateCategory,
+    updateAlpha,
+    pullUpRefresh,
+    pullDownRefresh
+  } = props
+
+  useEffect(() => {
+    getHotSinger()
+  }, [])
+
+  const handleUpdateCategory = key => {}
+
+  const handleUpdateAlpha = key => {}
 
   const renderSingerList = () => {
     return (
@@ -41,13 +74,13 @@ const Singers = memo(function Singers(props) {
           list={categoryTypes}
           title={'分类 (默认热门):'}
           current={category}
-          handleClick={key => setCategory(key)}
+          handleClick={key => handleUpdateCategory(key)}
         />
         <Horizen
           list={alphaTypes}
           title={'首字母:'}
           current={alpha}
-          handleClick={key => setAlpha(key)}
+          handleClick={key => handleUpdateAlpha(key)}
         ></Horizen>
       </NavContainer>
       <ListContainer>
@@ -58,6 +91,8 @@ const Singers = memo(function Singers(props) {
 })
 
 const mapStateToProps = state => ({
+  alpha: state.getIn(['singers', 'alpha']),
+  category: state.getIn(['singers', 'category']),
   singerList: state.getIn(['singers', 'singerList']),
   enterLoading: state.getIn(['singers', 'enterLoading']),
   pullUpLoading: state.getIn(['singers', 'pullUpLoading']),
@@ -65,6 +100,41 @@ const mapStateToProps = state => ({
   pageCount: state.getIn(['singers', 'pageCount'])
 })
 
-const mapDispatchToProps = dispatch => ({})
+const mapDispatchToProps = dispatch => ({
+  getHotSinger() {
+    dispatch(getHotSingerList())
+  },
+  updateCategory(newVal) {
+    dispatch(changeCategory(newVal))
+    dispatch(changeListOffset(0))
+    dispatch(changeEnterLoading(true))
+    dispatch(getSingerList())
+  },
+  updateAlpha(newVal) {
+    dispatch(changeAlpha(newVal))
+    dispatch(changeListOffset(0))
+    dispatch(changeEnterLoading(true))
+    dispatch(getSingerList())
+  },
+  // 滑到最底部刷新部分的处理
+  pullUpRefresh(hot, count) {
+    dispatch(changePullUpLoading(true))
+    if (hot) {
+      dispatch(refreshMoreHotSingerList())
+    } else {
+      dispatch(refreshMoreSingerList())
+    }
+  },
+  //顶部下拉刷新
+  pullDownRefresh(category, alpha) {
+    dispatch(changePullDownLoading(true))
+    dispatch(changeListOffset(0))
+    if (category === '' && alpha === '') {
+      dispatch(getHotSingerList())
+    } else {
+      dispatch(getSingerList())
+    }
+  }
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(Singers)

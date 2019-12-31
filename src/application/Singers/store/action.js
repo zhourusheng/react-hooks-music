@@ -6,6 +6,24 @@ export const CHANGE_PAGE_COUNT = 'singers/PAGE_COUNT'
 export const CHANGE_ENTER_LOADING = 'singers/ENTER_LOADING'
 export const CHANGE_PULLUP_LOADING = 'singers/PULLUP_LOADING'
 export const CHANGE_PULLDOWN_LOADING = 'singers/PULLDOWN_LOADING'
+export const CHANGE_CATOGORY = 'singers/CHANGE_CATEGORY'
+export const CHANGE_ALPHA = 'singers/CHANGE_ALPHA'
+export const CHANGE_LIST_OFFSET = 'singers/CHANGE_LIST_OFFSET'
+
+export const changeCategory = data => ({
+  type: CHANGE_CATOGORY,
+  data
+})
+
+export const changeAlpha = data => ({
+  type: CHANGE_ALPHA,
+  data
+})
+
+export const changeListOffset = data => ({
+  type: CHANGE_LIST_OFFSET,
+  data
+})
 
 export const changeSingerList = data => ({
   type: CHANGE_SINGER_LIST,
@@ -39,7 +57,7 @@ export const changePullDownLoading = data => ({
 export const getHotSingerList = () => {
   return async dispatch => {
     try {
-      const { artists } = getHotSingerListRequest(0)
+      const { artists } = await getHotSingerListRequest(0)
       dispatch(changeSingerList(artists))
       dispatch(changeEnterLoading(false))
       dispatch(changePullDownLoading(false))
@@ -50,7 +68,7 @@ export const getHotSingerList = () => {
 }
 
 // 加载更多热门歌手
-export const refreshMoreHotSinger = () => {
+export const refreshMoreHotSingerList = () => {
   return async (dispatch, getState) => {
     try {
       const pageCount = getState().getIn('singers', 'pageCount')
