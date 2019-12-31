@@ -1,4 +1,6 @@
 import React, { memo, useState } from 'react'
+import { connect } from 'react-redux'
+
 import { categoryTypes, alphaTypes } from '../../api/contants'
 import Horizen from '../../baseUI/horizen'
 import { NavContainer, ListContainer, List, ListItem } from './style'
@@ -8,19 +10,12 @@ const Singers = memo(function Singers(props) {
   const [category, setCategory] = useState('')
   const [alpha, setAlpha] = useState('')
 
-  const singerList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(item => {
-    return {
-      picUrl:
-        'https://p2.music.126.net/uTwOm8AEFFX_BYHvfvFcmQ==/109951164232057952.jpg',
-      name: '隔壁老樊',
-      accountId: 277313426
-    }
-  })
+  const { singerList } = props
 
   const renderSingerList = () => {
     return (
       <List>
-        {singerList.map((item, index) => {
+        {singerList.toJS().map((item, index) => {
           return (
             <ListItem key={item.accountId + '' + index}>
               <div className='img_wrapper'>
@@ -62,4 +57,14 @@ const Singers = memo(function Singers(props) {
   )
 })
 
-export default Singers
+const mapStateToProps = state => ({
+  singerList: state.getIn(['singers', 'singerList']),
+  enterLoading: state.getIn(['singers', 'enterLoading']),
+  pullUpLoading: state.getIn(['singers', 'pullUpLoading']),
+  pullDownLoading: state.getIn(['singers', 'pullDownLoading']),
+  pageCount: state.getIn(['singers', 'pageCount'])
+})
+
+const mapDispatchToProps = dispatch => ({})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Singers)
